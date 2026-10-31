@@ -1,10 +1,10 @@
 FROM node:20-alpine AS base
-
-# Dependências
-FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
+# Dependências
+FROM base AS deps
+WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 RUN npm ci
@@ -27,20 +27,21 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Instala o CLI do Prisma na versão 5 compatível globalmente
+# Instala Prisma 5 globalmente na imagem como root
 RUN npm install -g prisma@5.22.0
 
 RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
+RUN adduser --system --uid 1001 -h /home/nextjs nextjs
+RUN mkdir -p /home/nextjs/.cache/prisma && chown -R nextjs:nodejs /home/nextjs
 
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/scripts ./scripts
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 
-COPY docker-entrypoint.sh ./docker-entrypoint.sh
+COPY --chown=nextjs:nodejs docker-entrypoint.sh ./docker-entrypoint.sh
 RUN chmod +x ./docker-entrypoint.sh
 
 USER nextjs
