@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test:db": "node scripts/test-db.js",
-    "test:storage": "node scripts/test-storage.js"
+    "test:storage": "node scripts/test-storage.js",
+    "test:runpod": "node scripts/test-runpod-i2v.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1160.0",

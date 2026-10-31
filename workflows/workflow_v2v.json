@@ -1,0 +1,134 @@
+{
+  "1": {
+    "inputs": {
+      "video": "https://adult.flowrocket.com.br/placeholder.mp4",
+      "force_rate": 0,
+      "force_size": "Custom",
+      "custom_width": 768,
+      "custom_height": 768,
+      "frame_load_cap": 32,
+      "skip_first_frames": 0,
+      "select_every_nth": 1
+    },
+    "class_type": "VHS_LoadVideo",
+    "_meta": {
+      "title": "Input Source Video"
+    }
+  },
+  "2": {
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Base Model Checkpoint"
+    }
+  },
+  "3": {
+    "inputs": {
+      "text": "hyperrealistic, cinematic lighting, 8k resolution, smooth motion, high detail",
+      "clip": [
+        "2",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Positive Prompt"
+    }
+  },
+  "4": {
+    "inputs": {
+      "text": "blurry, distorted, artifacts, low quality, deformed, flickering",
+      "clip": [
+        "2",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "Negative Prompt"
+    }
+  },
+  "5": {
+    "inputs": {
+      "pixels": [
+        "1",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "VAEEncode",
+    "_meta": {
+      "title": "VAE Encode Video Latents"
+    }
+  },
+  "6": {
+    "inputs": {
+      "seed": 8927310481,
+      "steps": 20,
+      "cfg": 6.5,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "karras",
+      "denoise": 0.65,
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "3",
+        0
+      ],
+      "negative": [
+        "4",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler (V2V Transform)"
+    }
+  },
+  "7": {
+    "inputs": {
+      "samples": [
+        "6",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode"
+    }
+  },
+  "8": {
+    "inputs": {
+      "frame_rate": 16,
+      "loop_count": 0,
+      "filename_prefix": "GenApp_V2V",
+      "format": "video/h264-mp4",
+      "pix_fmt": "yuv420p",
+      "crf": 19,
+      "save_output": true,
+      "images": [
+        "7",
+        0
+      ]
+    },
+    "class_type": "VHS_VideoCombine",
+    "_meta": {
+      "title": "Video Combine / Export MP4"
+    }
+  }
+}
