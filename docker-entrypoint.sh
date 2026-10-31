@@ -12,3 +12,4 @@ done
 
 echo "Iniciando aplicação Next.js..."
 exec node server.js
+
